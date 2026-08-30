@@ -14,6 +14,7 @@ import {
   collection,
   runTransaction
 } from 'firebase/firestore';
+import { Platform } from 'react-native';
 import { db } from '../services/firebase';
 import { auth } from '../services/firebase';
 import { User, Household } from '../models/types';
@@ -24,6 +25,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   register: (email: string, pass: string, name: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   createHousehold: (name: string) => Promise<void>;
   joinHousehold: (householdId: string) => Promise<void>;
@@ -125,6 +127,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithGoogle = async () => {
+    setLoading(true);
+    try {
+      if (Platform.OS === 'web') {
+        const { GoogleAuthProvider, signInWithPopup } = require('firebase/auth');
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const fUser = result.user;
+
+        const userRef = doc(db, 'users', fUser.uid);
+        const { getDoc } = require('firebase/firestore');
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          const newUser: User = {
+            id: fUser.uid,
+            email: fUser.email || '',
+            displayName: fUser.displayName || 'Google-User',
+            householdId: null,
+            createdAt: new Date().toISOString(),
+          };
+          await setDoc(userRef, newUser);
+        }
+      } else {
+        throw new Error('Google Login ist in der App-Version noch nicht konfiguriert. Bitte nutze E-Mail/Passwort.');
+      }
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     setLoading(true);
     await signOut(auth);
@@ -215,7 +249,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, household, loading, login, register, logout, createHousehold, joinHousehold, leaveHousehold }}>
+    <AuthContext.Provider value={{ user, household, loading, login, register, loginWithGoogle, logout, createHousehold, joinHousehold, leaveHousehold }}>
       {children}
     </AuthContext.Provider>
   );

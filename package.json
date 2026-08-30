@@ -37,7 +37,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "build:web": "npx expo export --platform web && node scripts/postbuild.js",
+    "build:web": "npx expo export --platform web --clear && node scripts/postbuild.js",
     "serve:web": "node scripts/serve.js",
     "deploy": "gh-pages -d dist -t"
   },

@@ -11,15 +11,33 @@ import {
   ScrollView 
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setErrorMsg('');
+    setAuthLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch (err: any) {
+      console.error(err);
+      let cleanMsg = 'Google-Anmeldung fehlgeschlagen. Bitte versuche es erneut.';
+      if (err.code === 'auth/popup-blocked') {
+        cleanMsg = 'Das Google-Popup-Fenster wurde blockiert. Bitte erlaube Popups für diese Seite.';
+      }
+      setErrorMsg(cleanMsg);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!email || !password || (isRegister && !name)) {
@@ -126,6 +144,23 @@ export default function LoginScreen() {
                 {isRegister ? 'Konto erstellen' : 'Einloggen'}
               </Text>
             )}
+          </TouchableOpacity>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>ODER</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity 
+            style={[styles.button, styles.googleButton]}
+            onPress={handleGoogleLogin}
+            disabled={authLoading}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="logo-google" size={18} color="#FFF" style={{ marginRight: 8 }} />
+              <Text style={styles.buttonText}>Mit Google anmelden</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -254,5 +289,26 @@ const styles = StyleSheet.create({
   switchButtonText: {
     color: '#00F0FF',
     fontSize: 14,
+  },
+  googleButton: {
+    backgroundColor: '#4285F4',
+    shadowColor: '#4285F4',
+    marginTop: 10,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#2D254B',
+  },
+  dividerText: {
+    color: '#9E97B2',
+    paddingHorizontal: 10,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
