@@ -1,0 +1,17 @@
+{
+  "short_name": "Einkauf & Koch",
+  "name": "Einkaufs- & Koch-App",
+  "icons": [
+    {
+      "src": "/ShopList/assets/icon.png",
+      "type": "image/png",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/ShopList/",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0f5238",
+  "display": "standalone",
+  "orientation": "portrait"
+}

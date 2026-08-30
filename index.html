@@ -25,9 +25,20 @@
     </style>
   <link rel="icon" href="/ShopList/favicon.ico"/>
   <link rel="apple-touch-icon" href="/ShopList/assets/icon.png">
+  <link rel="manifest" href="/ShopList/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="List">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Einkauf &amp; Koch">
+  <meta name="theme-color" content="#0f5238">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/ShopList/sw.js')
+          .then(reg => console.log('ServiceWorker registriert'))
+          .catch(err => console.log('ServiceWorker Registrierungsfehler', err));
+      });
+    }
+  </script>
 </head>
 
   <body>
@@ -37,6 +48,6 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/ShopList/_expo/static/js/web/index-5ed28972dcb845e408e21537fd907b05.js" defer></script>
+  <script src="/ShopList/_expo/static/js/web/index-737696ad508457976cef3c79b9b487e0.js" defer></script>
 </body>
 </html>
